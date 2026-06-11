@@ -1,5 +1,8 @@
 import 'dart:math';
+
 import 'package:flutter/material.dart';
+
+import 'package:moonlight/utils/constants/sizes.dart';
 
 class AppSizes {
   static late MediaQueryData _mediaQuery;
@@ -34,7 +37,10 @@ class AppSizes {
       final usableWidth = max(screenWidth - safeArea.left - safeArea.right, 1.0);
       final usableHeight = max(screenHeight - safeArea.top - safeArea.bottom, 1.0);
 
-      blockWidth = usableWidth / 100;
+      // On tablet/desktop, horizontal sizing matches the constrained content
+      // column — not the full device width — so cards and buttons don't overflow.
+      final horizontalBasis = _horizontalBasisFor(usableWidth);
+      blockWidth = horizontalBasis / 100;
       blockHeight = usableHeight / 100;
 
       // Extra validation
@@ -72,6 +78,25 @@ class AppSizes {
           screenHeight > 0 &&
           blockWidth > 0 &&
           blockHeight > 0;
+
+  /// Usable horizontal space that widgets are laid out in.
+  /// On wide screens this equals [maxContentWidth], not full device width.
+  static double get contentWidth {
+    if (!_isValid) return 0;
+    return _horizontalBasisFor(
+      max(screenWidth - safeArea.left - safeArea.right, 1.0),
+    );
+  }
+
+  static double _horizontalBasisFor(double usableWidth) {
+    if (usableWidth >= AppBreakpoints.desktopMinWidth) {
+      return min(usableWidth, AppBreakpoints.desktopMaxContentWidth);
+    }
+    if (usableWidth >= AppBreakpoints.tabletMinWidth) {
+      return min(usableWidth, AppBreakpoints.tabletMaxContentWidth);
+    }
+    return usableWidth;
+  }
 
   static double width(double percent) {
     if (!_isValid) {
@@ -136,15 +161,30 @@ class AppSizes {
     );
   }
 
-  static bool get isMobile => _isValid ? screenWidth < 600 : true;
-  static bool get isTablet => _isValid ? (screenWidth >= 600 && screenWidth < 1024) : false;
-  static bool get isDesktop => _isValid ? screenWidth >= 1024 : false;
-  static bool get isWideScreen => _isValid ? screenWidth > 600 : false;
+  static bool get isMobile =>
+      _isValid ? screenWidth < AppBreakpoints.tabletMinWidth : true;
+  static bool get isTablet => _isValid
+      ? (screenWidth >= AppBreakpoints.tabletMinWidth &&
+            screenWidth < AppBreakpoints.desktopMinWidth)
+      : false;
+  static bool get isDesktop =>
+      _isValid ? screenWidth >= AppBreakpoints.desktopMinWidth : false;
+  static bool get isWideScreen =>
+      _isValid ? screenWidth >= AppBreakpoints.tabletMinWidth : false;
+
+  static double get maxContentWidth {
+    if (!_isValid) return double.infinity;
+    if (isDesktop) return AppBreakpoints.desktopMaxContentWidth;
+    if (isTablet) return AppBreakpoints.tabletMaxContentWidth;
+    return double.infinity;
+  }
 
   static double responsiveFont(double base, {double? tablet, double? desktop}) {
     if (!_isValid) return base;
-    if (isDesktop) return font(desktop ?? base * 1.4);
-    if (isTablet) return font(tablet ?? base * 1.2);
+    // Diagonal scaling already enlarges text on iPad; avoid stacking extra
+    // multipliers that squeeze text inside the narrow content column.
+    if (isDesktop) return font(desktop ?? base * 1.1);
+    if (isTablet) return font(tablet ?? base);
     return font(base);
   }
 }

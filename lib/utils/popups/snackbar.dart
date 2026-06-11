@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-
 import 'package:moonlight/utils/constants/colors.dart';
 import 'package:moonlight/utils/constants/text_styles.dart';
+import 'package:moonlight/utils/device/responsive_sizes.dart';
 
 class CustomSnackBar {
   CustomSnackBar._();
@@ -23,7 +23,7 @@ class CustomSnackBar {
   }
 
   static void showInfo(BuildContext context, String message) {
-    _show(context, message: message, backgroundColor: AppColors.lightOnBackground);
+    _show(context, message: message, backgroundColor: AppColors.darkSurface);
   }
 
   static void _show(
@@ -38,14 +38,16 @@ class CustomSnackBar {
         backgroundColor: backgroundColor,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(22),
+                    borderRadius: BorderRadius.circular(AppSizes.radius(5.5)),
+
         ),
         content: Text(
           message,
-          style: const TextStyle(
-            color: Colors.white,
+          style: TextStyle(
+            color: AppColors.textPrimary,
             fontFamily: TextStyles.fontFamily,
             fontWeight: FontWeight.w500,
+            fontSize: AppSizes.font(7),
           ),
         ),
       ),

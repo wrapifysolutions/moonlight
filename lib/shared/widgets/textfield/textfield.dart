@@ -82,14 +82,12 @@ class CustomTextField extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    final defaultFillColor =
-        fillColor ?? (isDark ? AppColors.darkSurface : AppColors.lightSurface);
-    final defaultBorderColor = borderColor ??
-        (isDark ? AppColors.darkOnSurface.withValues(alpha: 0.2) : const Color(0xFFE5E7EB));
-    final defaultFocusedBorderColor = focusedBorderColor ?? colorScheme.primary;
-    final defaultDisabledBorderColor = isDark
-        ? AppColors.darkOnSurface.withValues(alpha: 0.1)
-        : AppColors.lightOnSurface.withValues(alpha: 0.15);
+  final defaultFillColor =
+    fillColor ?? (isDark ? AppColors.darkSurface : AppColors.darkSurface);
+final defaultBorderColor = borderColor ??
+    (isDark ? AppColors.textMuted.withValues(alpha: 0.3) : AppColors.textMuted.withValues(alpha: 0.2));
+final defaultFocusedBorderColor = focusedBorderColor ?? colorScheme.primary;
+final defaultDisabledBorderColor = AppColors.textMuted.withValues(alpha: 0.15);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -167,9 +165,9 @@ class CustomTextField extends StatelessWidget {
                         child: prefixIcon,
                       )
                     : null,
-                prefixIconConstraints: const BoxConstraints(
-                  minWidth: 40,
-                  minHeight: 40,
+                prefixIconConstraints: BoxConstraints(
+                  minWidth: AppSizes.width(10),
+                  minHeight: AppSizes.width(10),
                 ),
                 suffixIcon: suffixIcon != null
                     ? GestureDetector(
@@ -181,9 +179,9 @@ class CustomTextField extends StatelessWidget {
                         ),
                       )
                     : null,
-                suffixIconConstraints: const BoxConstraints(
-                  minWidth: 40,
-                  minHeight: 40,
+                suffixIconConstraints: BoxConstraints(
+                  minWidth: AppSizes.width(10),
+                  minHeight: AppSizes.width(10),
                 ),
                 filled: true,
                 fillColor: defaultFillColor,
@@ -251,6 +249,31 @@ class CustomTextField extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+
+  factory CustomTextField.underline({
+    Key? key,
+    required String hintText,
+    TextEditingController? controller,
+    void Function(String)? onChanged,
+    TextInputType? keyboardType,
+    TextCapitalization textCapitalization = TextCapitalization.none,
+    TextStyle? hintTextStyle,
+  }) {
+    return CustomTextField(
+      key: key,
+      hintText: hintText,
+      controller: controller,
+      onChanged: onChanged,
+      keyboardType: keyboardType,
+      textCapitalization: textCapitalization,
+      hintTextStyle: hintTextStyle,
+      fillColor: Colors.transparent,
+      borderColor: Colors.transparent,
+      focusedBorderColor: Colors.transparent,
+      borderRadius: 0,
+      contentPadding: EdgeInsets.only(bottom: AppSizes.height(1)),
     );
   }
 }

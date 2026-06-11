@@ -6,6 +6,7 @@ class LocalStorageService {
   final SharedPreferences _prefs;
 
   static const String themeModeKey = 'theme_mode';
+  static const String languageCodeKey = 'language_code';
 
   String? getString(String key) => _prefs.getString(key);
 
